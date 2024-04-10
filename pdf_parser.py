@@ -145,7 +145,10 @@ def reset_performance_metrics_file():
         f.write("Performance metrics for each function:\n\n")
 
 
-def run_all():
+def run_all() -> None:
+    """
+    Runs all the PDF processing functions and saves the output to respective files.
+    """
     reset_performance_metrics_file()
     process_pdf_file_PyPDF(FILE_PATH, "output_data/test1_PyPDF.txt")
     process_pdf_file_UnstructuredPDF(FILE_PATH, "output_data/test1_UnstructuredPDF.txt")
