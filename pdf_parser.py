@@ -138,7 +138,18 @@ def process_pdf_file_PyMuPDF(file_path, output_file):
         out.write(bytes((12,))) # write page delimiter (form feed 0x0C)
     
     out.close()
-def run_all():
+
+
+def reset_performance_metrics_file():
+    with open('output_data/performance_metrics.txt', 'w') as f:
+        f.write("Performance metrics for each function:\n\n")
+
+
+def run_all() -> None:
+    """
+    Runs all the PDF processing functions and saves the output to respective files.
+    """
+    reset_performance_metrics_file()
     process_pdf_file_PyPDF(FILE_PATH, "output_data/test1_PyPDF.txt")
     process_pdf_file_UnstructuredPDF(FILE_PATH, "output_data/test1_UnstructuredPDF.txt")
     process_pdf_file_PDFMiner(FILE_PATH, "output_data/test1_PDFMiner.txt")
