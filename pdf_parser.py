@@ -7,7 +7,7 @@ import re
 import time 
 import psutil
 import os
-import fitz 
+import fitz
 
 FILE_PATH = "input_data/test1.pdf"
 
@@ -60,7 +60,7 @@ def process_pdf_file_PyPDF(file_path, output_file):
 
 
 @performance_decorator
-def process_pdf_file_UnstructuredPDF(file_path, output_file):
+def process_pdf_file_UnstructuredPDF_default_strategy(file_path, output_file):
     loader = UnstructuredPDFLoader(file_path, mode="elements")
     pages = loader.load_and_split()
     
@@ -69,6 +69,30 @@ def process_pdf_file_UnstructuredPDF(file_path, output_file):
         for i, page in enumerate(pages):
             f.write(page.page_content)
             f.write("\n")  # Optional: add a newline between pages
+
+
+@performance_decorator
+def process_pdf_file_UnstructuredPDF_OCR_only_strategy(file_path, output_file):
+    loader = UnstructuredPDFLoader(file_path, mode="ocr")
+    pages = loader.load_and_split()
+    
+    # Save the data to a text file for inspection
+    with open(output_file, "w", encoding='utf-8') as f:
+        for i, page in enumerate(pages):
+            f.write(page.page_content)
+            f.write("\n")
+
+
+@performance_decorator
+def process_pdf_file_UnstructuredPDF_hig_res_strategy(file_path, output_file):
+    loader = UnstructuredPDFLoader(file_path, mode="hi_res")
+    pages = loader.load_and_split()
+    
+    # Save the data to a text file for inspection
+    with open(output_file, "w", encoding='utf-8') as f:
+        for i, page in enumerate(pages):
+            f.write(page.page_content)
+            f.write("\n")
 
 
 @performance_decorator
@@ -151,7 +175,9 @@ def run_all() -> None:
     """
     reset_performance_metrics_file()
     process_pdf_file_PyPDF(FILE_PATH, "output_data/test1_PyPDF.txt")
-    process_pdf_file_UnstructuredPDF(FILE_PATH, "output_data/test1_UnstructuredPDF.txt")
+    process_pdf_file_UnstructuredPDF_hig_res_strategy(FILE_PATH, "output_data/test1_UnstructuredPDF_hi_res.txt")
+    process_pdf_file_UnstructuredPDF_default_strategy(FILE_PATH, "output_data/test1_UnstructuredPDF.txt")
+    process_pdf_file_UnstructuredPDF_OCR_only_strategy(FILE_PATH, "output_data/test1_UnstructuredPDF_OCR.txt")
     process_pdf_file_PDFMiner(FILE_PATH, "output_data/test1_PDFMiner.txt")
     process_pdf_file_PDFMiner_as_HTML(FILE_PATH, "output_data/test1_PDFMiner_as_HTML.html")
     process_pdf_file_PyMuPDF(FILE_PATH, "output_data/test1_PyMuPDF.txt")
