@@ -2,6 +2,9 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.document_loaders import UnstructuredPDFLoader
 from langchain_community.document_loaders import PDFMinerLoader
 from langchain_community.document_loaders import PDFMinerPDFasHTMLLoader
+from io import StringIO
+from pdfminer.high_level import extract_text_to_fp
+from pdfminer.layout import LAParams
 from bs4 import BeautifulSoup
 import re
 import time 
@@ -75,7 +78,7 @@ def process_pdf_file_UnstructuredPDF_default_strategy(file_path, output_file):
 
 @performance_decorator
 def process_pdf_file_UnstructuredPDF_OCR_only_strategy(file_path, output_file):
-    loader = UnstructuredPDFLoader(file_path, mode="elements", strategy='hi_res')
+    loader = UnstructuredPDFLoader(file_path, mode="elements", strategy='ocr_only')
     pages = loader.load_and_split()
     
     # Save the data to a text file for inspection
@@ -166,10 +169,19 @@ def process_pdf_file_PyMuPDF(file_path, output_file):
     out.close()
 
 
+def process_pdf_file_pdfminerSix(file_path, output_file):
+    output_string = StringIO()
+    with open(file_path, 'rb') as f:
+        extract_text_to_fp(f, output_string, laparams=LAParams())
+
+    # Save the data to a text file for inspection
+    with open(output_file, "w", encoding='utf-8') as f:
+        f.write(output_string.getvalue().strip())
+
+
 def reset_performance_metrics_file():
     with open('output_data/performance_metrics.txt', 'w') as f:
         f.write("Performance metrics for each function:\n\n")
-
 
 
 def run_all() -> None:
@@ -186,12 +198,15 @@ def run_all() -> None:
         (process_pdf_file_PDFMiner, (FILE_PATH, "output_data/test1_PDFMiner.txt")),
         (process_pdf_file_PDFMiner_as_HTML, (FILE_PATH, "output_data/test1_PDFMiner_as_HTML.html")),
         (process_pdf_file_PyMuPDF, (FILE_PATH, "output_data/test1_PyMuPDF.txt")),
+        (process_pdf_file_pdfminerSix, (FILE_PATH, "output_data/test1_pdfminerSix.txt")),
     ]
-
     with tqdm(total=len(tasks)) as pbar:
         for task in tasks:
             os.system('cls' if os.name == 'nt' else 'clear')  # Clear the console
             func, args = task
             pbar.set_description(f"Processing {args[1]}")
-            func(*args)
+            try:
+                func(*args)
+            except Exception as e:
+                print(f"An error occurred while processing {args[1]}: {str(e)}")
             pbar.update()
