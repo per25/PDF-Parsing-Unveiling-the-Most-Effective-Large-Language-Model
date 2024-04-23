@@ -183,10 +183,17 @@ def reset_performance_metrics_file():
         f.write("Performance metrics for each function:\n\n")
 
 
+def clear_output_files():
+    for file in os.listdir("output_data"):
+        if file.endswith(".txt") or file.endswith(".html") or file.endswith(".md"):
+            os.remove(os.path.join("output_data", file))
+
+
 def run_all(file_path) -> None:
     """
     Runs all the PDF processing functions and saves the output to respective files.
     """
+    clear_output_files()
     reset_performance_metrics_file()
 
     tasks = [
