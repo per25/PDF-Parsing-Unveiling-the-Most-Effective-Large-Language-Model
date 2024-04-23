@@ -1,13 +1,13 @@
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.document_loaders import UnstructuredPDFLoader
-from langchain_community.document_loaders import PDFMinerLoader
-from langchain_community.document_loaders import PDFMinerPDFasHTMLLoader
+from langchain_community.document_loaders import (
+    PyPDFLoader,
+    UnstructuredPDFLoader,
+    PDFMinerLoader,
+    PDFMinerPDFasHTMLLoader,
+)
 from io import StringIO
 from pdfminer.high_level import extract_text_to_fp
 from pdfminer.layout import LAParams
-from bs4 import BeautifulSoup
-import re
-import time 
+import time
 import psutil
 import os
 import fitz
