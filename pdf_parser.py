@@ -12,6 +12,8 @@ import psutil
 import os
 import fitz
 from tqdm import tqdm
+from bs4 import BeautifulSoup
+import re
 
 
 def performance_decorator(func):
