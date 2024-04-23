@@ -14,9 +14,6 @@ import fitz
 from tqdm import tqdm
 
 
-FILE_PATH = "input_data/test1.pdf"
-
-
 def performance_decorator(func):
     """
     A decorator that measures the performance metrics of a function.
@@ -184,21 +181,21 @@ def reset_performance_metrics_file():
         f.write("Performance metrics for each function:\n\n")
 
 
-def run_all() -> None:
+def run_all(file_path) -> None:
     """
     Runs all the PDF processing functions and saves the output to respective files.
     """
     reset_performance_metrics_file()
 
     tasks = [
-        (process_pdf_file_PyPDF, (FILE_PATH, "output_data/test1_PyPDF.txt")),
-        (process_pdf_file_UnstructuredPDF_hig_res_strategy, (FILE_PATH, "output_data/test1_UnstructuredPDF_hi_res.txt")),
-        (process_pdf_file_UnstructuredPDF_default_strategy, (FILE_PATH, "output_data/test1_UnstructuredPDF.txt")),
-        (process_pdf_file_UnstructuredPDF_OCR_only_strategy, (FILE_PATH, "output_data/test1_UnstructuredPDF_OCR.txt")),
-        (process_pdf_file_PDFMiner, (FILE_PATH, "output_data/test1_PDFMiner.txt")),
-        (process_pdf_file_PDFMiner_as_HTML, (FILE_PATH, "output_data/test1_PDFMiner_as_HTML.html")),
-        (process_pdf_file_PyMuPDF, (FILE_PATH, "output_data/test1_PyMuPDF.txt")),
-        (process_pdf_file_pdfminerSix, (FILE_PATH, "output_data/test1_pdfminerSix.txt")),
+        (process_pdf_file_PyPDF, (file_path, "output_data/test1_PyPDF.txt")),
+        (process_pdf_file_UnstructuredPDF_hig_res_strategy, (file_path, "output_data/test1_UnstructuredPDF_hi_res.txt")),
+        (process_pdf_file_UnstructuredPDF_default_strategy, (file_path, "output_data/test1_UnstructuredPDF.txt")),
+        (process_pdf_file_UnstructuredPDF_OCR_only_strategy, (file_path, "output_data/test1_UnstructuredPDF_OCR.txt")),
+        (process_pdf_file_PDFMiner, (file_path, "output_data/test1_PDFMiner.txt")),
+        (process_pdf_file_PDFMiner_as_HTML, (file_path, "output_data/test1_PDFMiner_as_HTML.html")),
+        (process_pdf_file_PyMuPDF, (file_path, "output_data/test1_PyMuPDF.txt")),
+        (process_pdf_file_pdfminerSix, (file_path, "output_data/test1_pdfminerSix.txt")),
     ]
     with tqdm(total=len(tasks)) as pbar:
         for task in tasks:
