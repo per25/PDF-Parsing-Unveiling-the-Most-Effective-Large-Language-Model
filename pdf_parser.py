@@ -179,11 +179,17 @@ def process_pdf_file_pdfminerSix(file_path, output_file):
 
 
 def reset_performance_metrics_file():
+    """
+    Resets the performance metrics file by clearing its contents and adding a header.
+    """
     with open('output_data/performance_metrics.txt', 'w') as f:
         f.write("Performance metrics for each function:\n\n")
 
 
 def clear_output_files():
+    """
+    Clears all the output files in the 'output_data' directory with extensions '.txt', '.html', and '.md'.
+    """
     for file in os.listdir("output_data"):
         if file.endswith(".txt") or file.endswith(".html") or file.endswith(".md"):
             os.remove(os.path.join("output_data", file))
