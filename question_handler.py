@@ -9,7 +9,7 @@ def get_questions(file_name, folder_path):
     try:
         # remove the extension from the file name
         file_name = file_name.split(".")[0]
-        path = os.path.join(folder_path, "questions", file_name + "_questions.json")
+        path = os.path.join(folder_path, file_name + "_questions.json")
         # load the json file
         content = None
         with open(path, "r") as file:
@@ -70,4 +70,4 @@ def run(output_folder_path, questions_folder_path):
 
     df.to_excel('responses.xlsx', index=False)
 
-run("output_data", "input_data")
+# run("output_data", "input_data")
