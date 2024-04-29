@@ -234,10 +234,6 @@ def run_all(input_folder_path, output_folder_path) -> None:
             for task in tasks:
                 func, args = task
                 pbar.set_description(f"Processing {args[1]}")
-                # Check if the directory exists right before the task is executed
-                dir_path = os.path.dirname(args[1])
-                if not os.path.exists(dir_path):
-                    print(f"Directory {dir_path} does not exist!")
                 try:
                     func(*args)
                 except Exception as e:
