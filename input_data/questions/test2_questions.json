@@ -2,18 +2,23 @@
   "questions": [
     {
       "id": 1,
-      "question": "What is the capital of France?",
-      "answer": "Paris"
+      "question": "What is Mickey Mouse number ?",
+      "answer": "69"
     },
     {
       "id": 2,
-      "question": "Who painted the Mona Lisa?",
-      "answer": "Leonardo da Vinci"
+      "question": "Who have number 77?",
+      "answer": "Ethan"
     },
     {
       "id": 3,
-      "question": "What is the largest planet in our solar system?",
-      "answer": "Jupiter"
+      "question": "What number do mia have?",
+      "answer": "23"
+    },
+    {
+      "id": 4,
+      "question": "What number is the largest?",
+      "answer": "91"
     }
   ]
 }
