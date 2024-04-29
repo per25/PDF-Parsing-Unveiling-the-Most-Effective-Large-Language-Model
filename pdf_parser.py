@@ -14,6 +14,7 @@ import fitz
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 import re
+import shutil
 
 
 def performance_decorator(func):
@@ -186,39 +187,59 @@ def reset_performance_metrics_file():
         f.write("Performance metrics for each function:\n\n")
 
 
-def clear_output_files():
+def clear_output_files(path):
     """
-    Clears all the output files in the 'output_data' directory with extensions '.txt', '.html', and '.md'.
+    Clears all the files and folders in path directory with extensions '.txt', '.html', and '.md'.
     """
-    for file in os.listdir("output_data"):
+    for file in os.listdir(path):
         if file.endswith(".txt") or file.endswith(".html") or file.endswith(".md"):
-            os.remove(os.path.join("output_data", file))
+            os.remove(os.path.join(path, file))
+        elif os.path.isdir(os.path.join(path, file)):
+            shutil.rmtree(os.path.join(path, file))
 
 
-def run_all(file_path) -> None:
+def run_all(input_folder_path, output_folder_path) -> None:
     """
     Runs all the PDF processing functions and saves the output to respective files.
     """
-    clear_output_files()
+    
+    # get all the files in the folder
+    files = os.listdir(input_folder_path)
+    
+    clear_output_files(output_folder_path)
     reset_performance_metrics_file()
 
-    tasks = [
-        (process_pdf_file_PyPDF, (file_path, "output_data/test1_PyPDF.txt")),
-        (process_pdf_file_UnstructuredPDF_hig_res_strategy, (file_path, "output_data/test1_UnstructuredPDF_hi_res.txt")),
-        (process_pdf_file_UnstructuredPDF_default_strategy, (file_path, "output_data/test1_UnstructuredPDF.txt")),
-        (process_pdf_file_UnstructuredPDF_OCR_only_strategy, (file_path, "output_data/test1_UnstructuredPDF_OCR.txt")),
-        (process_pdf_file_PDFMiner, (file_path, "output_data/test1_PDFMiner.txt")),
-        (process_pdf_file_PDFMiner_as_HTML, (file_path, "output_data/test1_PDFMiner_as_HTML.html")),
-        (process_pdf_file_PyMuPDF, (file_path, "output_data/test1_PyMuPDF.txt")),
-        (process_pdf_file_pdfminerSix, (file_path, "output_data/test1_pdfminerSix.txt")),
-    ]
-    with tqdm(total=len(tasks)) as pbar:
-        for task in tasks:
-            os.system('cls' if os.name == 'nt' else 'clear')  # Clear the console
-            func, args = task
-            pbar.set_description(f"Processing {args[1]}")
-            try:
-                func(*args)
-            except Exception as e:
-                print(f"An error occurred while processing {args[1]}: {str(e)}")
-            pbar.update()
+    for file in files:
+        print("file: ", file)
+        output_path = os.path.join(output_folder_path, file.split(".")[0])
+        input_path = os.path.join(input_folder_path, file)
+        print("output_path: ", output_path)
+        # create a folder for the output data in the output folder
+        if not os.path.exists(file.split(".")[0]):
+            path = os.path.join(output_folder_path, file.split(".")[0])
+            os.makedirs(path)
+
+        tasks = [
+            (process_pdf_file_PyPDF, (input_path, os.path.join(output_path, "PyPDF.txt"))),
+            (process_pdf_file_UnstructuredPDF_hig_res_strategy, (input_path, os.path.join(output_path, "UnstructuredPDF_hi_res.txt"))),
+            (process_pdf_file_UnstructuredPDF_default_strategy, (input_path, os.path.join(output_path, "UnstructuredPDF.txt"))),
+            (process_pdf_file_UnstructuredPDF_OCR_only_strategy, (input_path, os.path.join(output_path, "UnstructuredPDF_OCR.txt"))),
+            (process_pdf_file_PDFMiner, (input_path, os.path.join(output_path, "PDFMiner.txt"))),
+            (process_pdf_file_PDFMiner_as_HTML, (input_path, os.path.join(output_path, "PDFMiner_as_HTML.html"))),
+            (process_pdf_file_PyMuPDF, (input_path, os.path.join(output_path, "PyMuPDF.txt"))),
+            (process_pdf_file_pdfminerSix, (input_path, os.path.join(output_path, "pdfminerSix.txt")))
+        ]
+
+        with tqdm(total=len(tasks)) as pbar:
+            for task in tasks:
+                func, args = task
+                pbar.set_description(f"Processing {args[1]}")
+                # Check if the directory exists right before the task is executed
+                dir_path = os.path.dirname(args[1])
+                if not os.path.exists(dir_path):
+                    print(f"Directory {dir_path} does not exist!")
+                try:
+                    func(*args)
+                except Exception as e:
+                    print(f"\nAn error occurred while processing {args[1]}: {str(e)}")
+                pbar.update()
