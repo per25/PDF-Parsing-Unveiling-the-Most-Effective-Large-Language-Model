@@ -41,8 +41,7 @@ def run(output_folder_path, questions_folder_path):
     folders = [f for f in os.listdir(output_folder_path) if os.path.isdir(os.path.join(output_folder_path, f))]
     print(folders)
 
-    model = "gpt-3.5-turbo"
-    # model = "meta-llama/llama-3-8b-instruct:nitro"
+    models = ["gpt-3.5-turbo", "meta-llama/llama-3-8b-instruct:nitro"]
 
     data = {'Model': [], 'Folder': [], 'File': [], 'Question': [], 'Answer': [], 'Correct Answer': []}
     df = pd.DataFrame(data)
@@ -53,20 +52,25 @@ def run(output_folder_path, questions_folder_path):
         print(files)
         filedata = get_questions(folder, questions_folder_path)
         for file in files:
-
             path = os.path.join(output_folder_path, folder, file)
+            
             content = None
+            
             with open(path, "r") as f:
                 content = f.read()
-            conversation = [{"role": "system", "content": "Based on the information provided give short and concise answers to the following questions"},
-                            {"role": "user", "content": content}]
-            questions = filedata["questions"]
-            for data in questions:
+            
+            for llm in models:
+            
+                conversation = [{"role": "system", "content": "Based on the information provided give short and concise answers to the following questions"},
+                                {"role": "user", "content": content}]
+            
+                questions = filedata["questions"]
+                for data in questions:
                     question = data["question"]
                     print("question:" + question)
-                    response = prompt_model(model, conversation, question)
+                    response = prompt_model(llm, conversation, question)
                     print("response:" + response)
-                    df = df._append({'Model': model,
+                    df = df._append({'Model': llm,
                                     'Folder': folder, 
                                     'File': file, 
                                     'Question': question, 
