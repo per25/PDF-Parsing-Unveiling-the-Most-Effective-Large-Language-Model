@@ -2,7 +2,11 @@ from openai import OpenAI
 import os
 import json
 import pandas as pd
-client = OpenAI()
+from os import getenv
+
+client = OpenAI(base_url="https://openrouter.ai/api/v1",
+                api_key=getenv("OPENROUTER_API_KEY"))
+
 
 
 def get_questions(file_name, folder_path):
@@ -38,6 +42,8 @@ def run(output_folder_path, questions_folder_path):
     print(folders)
 
     model = "gpt-3.5-turbo"
+    # model = "meta-llama/llama-3-8b-instruct:nitro"
+
     data = {'Model': [], 'Folder': [], 'File': [], 'Question': [], 'Answer': [], 'Correct Answer': []}
     df = pd.DataFrame(data)
 
@@ -70,4 +76,4 @@ def run(output_folder_path, questions_folder_path):
 
     df.to_excel('responses.xlsx', index=False)
 
-# run("output_data", "input_data")
+run("output_data", "input_data/questions")
