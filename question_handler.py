@@ -3,11 +3,12 @@ import os
 import json
 import pandas as pd
 from os import getenv
+from langsmith.wrappers import wrap_openai
 
 client = OpenAI(base_url="https://openrouter.ai/api/v1",
                 api_key=getenv("OPENROUTER_API_KEY"))
 
-
+client = wrap_openai(client)
 
 def get_questions(file_name, folder_path):
     try:
@@ -78,6 +79,15 @@ def run(output_folder_path, questions_folder_path):
                                     'Correct Answer': data["answer"]}, 
                                     ignore_index=True)
 
-    df.to_excel('responses.xlsx', index=False)
+    while True:
+        try:
+            df.to_excel('responses.xlsx', index=False)
+            break
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+            print("Please close the file and press Enter to try again.")
+            input()
+            continue
+
 
 run("output_data", "input_data/questions")
