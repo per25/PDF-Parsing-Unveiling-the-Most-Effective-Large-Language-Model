@@ -1,3 +1,4 @@
+import time
 from openai import OpenAI
 import os
 import json
@@ -79,9 +80,17 @@ def run(output_folder_path, questions_folder_path):
                                     'Correct Answer': data["answer"]}, 
                                     ignore_index=True)
 
+    # Create a results folder if it doesn't exist
+    if not os.path.exists('results'):
+        os.makedirs('results')
+
+    # Get the current timestamp
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+
+    # Save the dataframe to an Excel file with the timestamp as the filename
     while True:
         try:
-            df.to_excel('responses.xlsx', index=False)
+            df.to_excel(f'results/responses_{timestamp}.xlsx', index=False)
             break
         except Exception as e:
             print(f"An error occurred: {str(e)}")
@@ -89,5 +98,4 @@ def run(output_folder_path, questions_folder_path):
             input()
             continue
 
-
-run("output_data", "input_data/questions")
+# run("output_data", "input_data/questions")
