@@ -58,9 +58,16 @@ def run(output_folder_path, questions_folder_path):
             
             content = None
             
-            with open(path, "r") as f:
-                content = f.read()
-            
+            try:
+                with open(path, "r", encoding="utf8", errors="ignore") as f:
+                    content = f.read()
+            except Exception as e:
+                print(f"An error occurred: {str(e)}")
+                print("When reading the file: " + path)
+                print("Press any key to continue...")
+                input()
+                continue
+
             for llm in models:
             
                 conversation = [{"role": "system", "content": "Based on the information provided give short and concise answers to the following questions"},
@@ -98,4 +105,4 @@ def run(output_folder_path, questions_folder_path):
             input()
             continue
 
-# run("output_data", "input_data/questions")
+run("output_data", "input_data/questions")
