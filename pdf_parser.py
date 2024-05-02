@@ -238,4 +238,6 @@ def run_all(input_folder_path, output_folder_path) -> None:
                     func(*args)
                 except Exception as e:
                     print(f"\nAn error occurred while processing {args[1]}: {str(e)}")
+                    print("Press any key to continue...")
+                    input()
                 pbar.update()
