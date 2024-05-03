@@ -5,6 +5,7 @@ import json
 import pandas as pd
 from os import getenv
 from langsmith.wrappers import wrap_openai
+from concurrent.futures import ThreadPoolExecutor
 
 client = OpenAI(base_url="https://openrouter.ai/api/v1",
                 api_key=getenv("OPENROUTER_API_KEY"))
@@ -39,63 +40,60 @@ def prompt_model(model, messages, question):
 
 
 def run(output_folder_path, questions_folder_path):
-    # get all the folders in the output folder 
     folders = [f for f in os.listdir(output_folder_path) if os.path.isdir(os.path.join(output_folder_path, f))]
     print(folders)
 
     models = ["gpt-3.5-turbo", "meta-llama/llama-3-8b-instruct:nitro"]
 
     data = {'Model': [], 'Folder': [], 'File': [], 'Question': [], 'Answer': [], 'Correct Answer': []}
-    df = pd.DataFrame(data)
 
-    for folder in folders:
-        # get all the files in the folder 
-        files = os.listdir(os.path.join(output_folder_path, folder))
-        print(files)
+    # Function to process each file
+    def process_file(folder, file):
+        results = []
+        path = os.path.join(output_folder_path, folder, file)
         filedata = get_questions(folder, questions_folder_path)
-        for file in files:
-            path = os.path.join(output_folder_path, folder, file)
-            
-            content = None
-            
-            with open(path, "r") as f:
-                content = f.read()
-            
-            for llm in models:
-            
-                conversation = [{"role": "system", "content": "Based on the information provided give short and concise answers to the following questions"},
-                                {"role": "user", "content": content}]
-            
-                questions = filedata["questions"]
-                for data in questions:
-                    question = data["question"]
-                    print("question:" + question)
-                    response = prompt_model(llm, conversation, question)
-                    print("response:" + response)
-                    df = df._append({'Model': llm,
-                                    'Folder': folder, 
-                                    'File': file, 
-                                    'Question': question, 
-                                    'Answer': response,
-                                    'Correct Answer': data["answer"]}, 
-                                    ignore_index=True)
-
-    # Create a results folder if it doesn't exist
-    if not os.path.exists('results'):
-        os.makedirs('results')
-
-    # Get the current timestamp
-    timestamp = time.strftime("%Y%m%d-%H%M%S")
-
-    # Save the dataframe to an Excel file with the timestamp as the filename
-    while True:
+        
         try:
-            df.to_excel(f'results/responses_{timestamp}.xlsx', index=False)
-            break
+            with open(path, "r", encoding="utf8", errors="ignore") as f:
+                content = f.read()
         except Exception as e:
             print(f"An error occurred: {str(e)}")
-            print("Please close the file and press Enter to try again.")
-            input()
-            continue
+            print("When reading the file: " + path)
+            return results
+            
+        for llm in models:
+            
+            conversation = [{"role": "system", "content": "Based on the information provided give short and concise answers to the following questions"},
+                            {"role": "user", "content": content}]
+            
+            questions = filedata["questions"]
+            for data in questions:
+                question = data["question"]
+                response = prompt_model(llm, conversation, question)
+                results.append({'Model': llm, 'Folder': folder, 'File': file, 'Question': question, 'Answer': response, 'Correct Answer': data["answer"]})
+        return results
+
+    # Use ThreadPoolExecutor to handle files concurrently within each folder
+    results = []
+    with ThreadPoolExecutor() as executor:
+        future_to_folder = {executor.submit(process_file, folder, file): (folder, file)
+                            for folder in folders
+                            for file in os.listdir(os.path.join(output_folder_path, folder))}
+        for future in future_to_folder:
+            results.extend(future.result())
+
+    # Append results to DataFrame outside of threads
+    df = pd.DataFrame(results)
+
+    # Saving results
+    if not os.path.exists('results'):
+        os.makedirs('results')
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    try:
+        df.to_excel(f'results/responses_{timestamp}.xlsx', index=False)
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        print("Please close the file and press Enter to try again.")
+        input()
 
 # run("output_data", "input_data/questions")
