@@ -1,0 +1,19 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "Which team won the regular season?",
+      "answer": "Farjestad BK"
+    },
+    {
+      "id": 2,
+      "question": "How many points are the winning team awarded in regulation time?",
+      "answer": "Three points"
+    },
+    {
+      "id": 3,
+      "question": "When did the regular season start and end?",
+      "answer": "September 2023, March 2024"
+    }
+  ]
+}

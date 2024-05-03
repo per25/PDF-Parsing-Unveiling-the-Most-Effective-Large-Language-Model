@@ -1,0 +1,49 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "Which city has the largest population according to the table?",
+      "answer": "Berlin"
+    },
+    {
+      "id": 2,
+      "question": "What is the population in Stockholm according to the table?",
+      "answer": "988,943"
+    },
+    {
+      "id": 3,
+      "question": "What is the date to Rome according to the table?",
+      "answer": "1 Jan 2023"
+    },
+    {
+      "id": 4,
+      "question": "Which player scored the most points?",
+      "answer": "Nikita Kucherov"
+    },
+    {
+      "id": 5,
+      "question": "Which player scored the most goals and which team does he belong to?",
+      "answer": "Auston Matthews, Toronto Maple Leafs"
+    },
+    {
+      "id": 6,
+      "question": "How many players scored over 105 points?",
+      "answer": "7"
+    },
+    {
+      "id": 7,
+      "question": "Which player had the most wins and what was his save percentage?",
+      "answer": "Connor Hellebuyck, 0.921"
+    },
+    {
+      "id": 8,
+      "question": "Which player on the Boston Bruins had the lowest goals against average?",
+      "answer": "Jeremy Swayman"
+    },
+    {
+      "id": 9,
+      "question": "How many games did Linus Ullmark play in?",
+      "answer": "40"
+    }
+  ]
+}
