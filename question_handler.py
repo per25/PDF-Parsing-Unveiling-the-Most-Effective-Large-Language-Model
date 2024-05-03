@@ -45,7 +45,7 @@ def run(output_folder_path, questions_folder_path):
 
     models = ["gpt-3.5-turbo", "meta-llama/llama-3-8b-instruct:nitro"]
 
-    data = {'Model': [], 'Folder': [], 'File': [], 'Question': [], 'Answer': [], 'Correct Answer': []}
+    data = {'Model': [], 'Folder': [], 'File': [], 'Question': [], 'Answer': [], 'not_mention':[], 'Correct Answer': []}
 
     # Function to process each file
     def process_file(folder, file):
@@ -70,7 +70,7 @@ def run(output_folder_path, questions_folder_path):
             for data in questions:
                 question = data["question"]
                 response = prompt_model(llm, conversation, question)
-                results.append({'Model': llm, 'Folder': folder, 'File': file, 'Question': question, 'Answer': response, 'Correct Answer': data["answer"]})
+                results.append({'Model': llm, 'Folder': folder, 'File': file, 'Question': question, 'Answer': response, 'not_mention': data.get("not_mention"), 'Correct Answer': data["answer"]})
         return results
 
     # Use ThreadPoolExecutor to handle files concurrently within each folder

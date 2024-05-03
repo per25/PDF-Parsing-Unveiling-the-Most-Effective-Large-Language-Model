@@ -3,12 +3,15 @@
     {
       "id": 1,
       "question": "What does it say in the header?",
-      "answer": "T, LLM WIKI"
+      "answer": "T, LLM WIKI",
+      "not_mention": "B, GPT"
     },
     {
       "id": 2,
       "question": "What does it say in the footer?",
-      "answer": "B, GPT"
+      "answer": "B, GPT",
+      "not_mention": "T, LLM WIKI"
+
     },
     {
       "id": 3,
