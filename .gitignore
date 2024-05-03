@@ -4,6 +4,7 @@
 ### Project ###
 # ignore the output_data folder and its contents
 output_data/
+results/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
