@@ -96,4 +96,4 @@ def run(output_folder_path, questions_folder_path):
         print("Please close the file and press Enter to try again.")
         input()
 
-# run("output_data", "input_data/questions")
+run("output_data", "input_data/questions")
