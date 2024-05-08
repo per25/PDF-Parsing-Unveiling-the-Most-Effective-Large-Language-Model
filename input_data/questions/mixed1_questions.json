@@ -1,0 +1,19 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the brand on the beer bottle in Figure 1: Beer?",
+      "answer": "Heineken"
+    },
+    {
+      "id": 2,
+      "question": "What is the alcohol percentage of a Class II beer?",
+      "answer": "up to 3.5%"
+    },
+    {
+      "id": 3,
+      "question": "What is the beer brand on the beer from 1989?",
+      "answer": "Norrlands Guld"
+    }
+  ]
+}

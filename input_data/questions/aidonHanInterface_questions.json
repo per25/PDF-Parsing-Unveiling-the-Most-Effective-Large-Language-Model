@@ -1,0 +1,29 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "How many chapters are there in the contents?",
+      "answer": "3"
+    },
+    {
+      "id": 2,
+      "question": "What is the Signal for Pin 1 in Table 1: HAN interface pinout?",
+      "answer": "5V"
+    },
+    {
+      "id": 3,
+      "question": "What does the sent data List from 3-phase ESD begin and end with?",
+      "answer": "7e"
+    },
+    {
+      "id": 4,
+      "question": "What does the text box say on Figure 1: Integrated HAN interface on Aidon ESD?",
+      "answer": "HAN interface integrated to Aidon ESD"
+    },
+    {
+      "id": 5,
+      "question": "What is the max output low voltage from the HAN device?",
+      "answer": "1,0V"
+    }
+  ]
+}
