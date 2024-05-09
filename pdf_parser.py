@@ -190,6 +190,58 @@ def process_pdf_file_textract_with_correction(file_path, output_file):
         f.write(filter_text)
     
 
+@performance_decorator
+def process_pdf_file_llama_index_md(file_path, output_file):
+    import nest_asyncio 
+    from llama_parse import LlamaParse
+    from os import getenv
+
+    nest_asyncio.apply()
+
+    key = getenv("LlamaIndex")
+
+    parser = LlamaParse(
+        api_key=key,
+        result_type="markdown",
+        num_workers=4,
+        verbose=True,
+        language="en"
+    )
+
+    # sync 
+    document = parser.load_data(file_path)
+    print(document[0].text)
+
+    with open(output_file, "w", encoding='utf-8') as f:
+        f.write(document[0].text)
+
+
+@performance_decorator
+def process_pdf_file_llama_index_txt(file_path, output_file):
+    import nest_asyncio 
+    from llama_parse import LlamaParse
+    from os import getenv
+
+    nest_asyncio.apply()
+
+    key = getenv("LlamaIndex")
+
+    parser = LlamaParse(
+        api_key=key,
+        result_type="markdown",
+        num_workers=4,
+        verbose=True,
+        language="en"
+    )
+
+    # sync 
+    document = parser.load_data(file_path)
+    print(document[0].text)
+
+    
+    with open(output_file, "w", encoding='utf-8') as f:
+        f.write(document[0].text)
+
 
 def reset_performance_metrics_file():
     """
@@ -240,7 +292,9 @@ def run_all(input_folder_path, output_folder_path) -> None:
             (process_pdf_file_PDFMiner_as_HTML, (input_path, os.path.join(output_path, "PDFMiner_as_HTML.html"))),
             (process_pdf_file_PyMuPDF, (input_path, os.path.join(output_path, "PyMuPDF.txt"))),
             (process_pdf_file_pdfminerSix, (input_path, os.path.join(output_path, "pdfminerSix.txt"))),
-            (process_pdf_file_textract_with_correction, (input_path, os.path.join(output_path, "textract_with_correction")))        
+            (process_pdf_file_textract_with_correction, (input_path, os.path.join(output_path, "textract_with_correction"))),       
+            (process_pdf_file_llama_index_md, (input_path, os.path.join(output_path, "llama_index.md"))),
+            (process_pdf_file_llama_index_txt, (input_path, os.path.join(output_path, "llama_index.txt")))
         ]
 
         with tqdm(total=len(tasks)) as pbar:
