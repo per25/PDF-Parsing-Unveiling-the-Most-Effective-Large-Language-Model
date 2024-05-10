@@ -210,7 +210,6 @@ def process_pdf_file_llama_index_md(file_path, output_file):
 
     # sync 
     document = parser.load_data(file_path)
-    print(document[0].text)
 
     with open(output_file, "w", encoding='utf-8') as f:
         f.write(document[0].text)
@@ -236,8 +235,6 @@ def process_pdf_file_llama_index_txt(file_path, output_file):
 
     # sync 
     document = parser.load_data(file_path)
-    print(document[0].text)
-
     
     with open(output_file, "w", encoding='utf-8') as f:
         f.write(document[0].text)
