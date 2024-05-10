@@ -182,11 +182,11 @@ def process_pdf_file_pdfminerSix(file_path, output_file):
 def process_pdf_file_textract_with_correction(file_path, output_file):
     import tesseract_with_llama2_corrections as tesseract_with_llama2
     raw_ocr, corrected_text, filter_text = tesseract_with_llama2.tesseract_with_llm_correction(file_path)
-    with open(output_file + "raw_ocr.md", "w", encoding='utf-8') as f:
+    with open(output_file + "_raw_ocr.md", "w", encoding='utf-8') as f:
         f.write(raw_ocr)
-    with open(output_file + "txt", "w", encoding='utf-8') as f:
+    with open(output_file + "_corrected", "w", encoding='utf-8') as f:
         f.write(corrected_text)
-    with open(output_file + "filter_text.md", "w", encoding='utf-8') as f:
+    with open(output_file + "_fileted.md", "w", encoding='utf-8') as f:
         f.write(filter_text)
     
 
@@ -282,14 +282,14 @@ def run_all(input_folder_path, output_folder_path) -> None:
 
         tasks = [
             (process_pdf_file_PyPDF, (input_path, os.path.join(output_path, "PyPDF.txt"))),
-            (process_pdf_file_UnstructuredPDF_hig_res_strategy, (input_path, os.path.join(output_path, "UnstructuredPDF_hi_res.txt"))),
-            (process_pdf_file_UnstructuredPDF_default_strategy, (input_path, os.path.join(output_path, "UnstructuredPDF.txt"))),
-            (process_pdf_file_UnstructuredPDF_OCR_only_strategy, (input_path, os.path.join(output_path, "UnstructuredPDF_OCR.txt"))),
+            (process_pdf_file_UnstructuredPDF_hig_res_strategy, (input_path, os.path.join(output_path, "Unstructured_hi_res.txt"))),
+            (process_pdf_file_UnstructuredPDF_default_strategy, (input_path, os.path.join(output_path, "Unstructured.txt"))),
+            (process_pdf_file_UnstructuredPDF_OCR_only_strategy, (input_path, os.path.join(output_path, "Unstructured_OCR.txt"))),
             (process_pdf_file_PDFMiner, (input_path, os.path.join(output_path, "PDFMiner.txt"))),
-            (process_pdf_file_PDFMiner_as_HTML, (input_path, os.path.join(output_path, "PDFMiner_as_HTML.html"))),
+            (process_pdf_file_PDFMiner_as_HTML, (input_path, os.path.join(output_path, "PDFMiner_HTML.html"))),
             (process_pdf_file_PyMuPDF, (input_path, os.path.join(output_path, "PyMuPDF.txt"))),
             (process_pdf_file_pdfminerSix, (input_path, os.path.join(output_path, "pdfminerSix.txt"))),
-            (process_pdf_file_textract_with_correction, (input_path, os.path.join(output_path, "textract_with_correction"))),       
+            (process_pdf_file_textract_with_correction, (input_path, os.path.join(output_path, "textract"))),       
             (process_pdf_file_llama_index_md, (input_path, os.path.join(output_path, "llama_index.md"))),
             (process_pdf_file_llama_index_txt, (input_path, os.path.join(output_path, "llama_index.txt")))
         ]
