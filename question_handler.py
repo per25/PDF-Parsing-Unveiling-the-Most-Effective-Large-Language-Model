@@ -29,6 +29,16 @@ def get_questions(file_name, folder_path):
         print(f"An error occurred: {str(e)}")
 
 
+def get_cost(response):
+    prices = {
+        "gpt-3.5-turbo": 0.5 / 1_000_000,
+        "llama-3-8b-instruct": 0.07 / 1_000_000
+    }
+    model = response.model.split("/")[1]
+    tokens = response.usage.total_tokens
+    return prices[model] * tokens
+
+
 def prompt_model(model, messages, question):
     messages.append({"role": "user", "content": question})
     response = client.chat.completions.create(
@@ -36,14 +46,14 @@ def prompt_model(model, messages, question):
         messages=messages
     )
     messages.append({"role": "assistant", "content": response.choices[0].message.content})
-    return response.choices[0].message.content
+    return response
 
 
 def run(output_folder_path, questions_folder_path):
     folders = [f for f in os.listdir(output_folder_path) if os.path.isdir(os.path.join(output_folder_path, f))]
     print(folders)
 
-    models = ["gpt-3.5-turbo", "meta-llama/llama-3-8b-instruct:nitro"]
+    models = ["gpt-3.5-turbo", "meta-llama/llama-3-8b-instruct"]
 
     data = {'Model': [], 'Folder': [], 'File': [], 'Question': [], 'Answer': [], 'not_mention':[], 'Correct Answer': []}
 
@@ -70,7 +80,17 @@ def run(output_folder_path, questions_folder_path):
             for data in questions:
                 question = data["question"]
                 response = prompt_model(llm, conversation, question)
-                results.append({'Model': llm, 'Folder': folder, 'File': file, 'Question': question, 'Answer': response, 'not_mention': data.get("not_mention"), 'Correct Answer': data["answer"]})
+                results.append({'Model': llm,
+                                'Folder': folder,
+                                 'File': file.split(".")[0],
+                                 'Question': question,
+                                 'Answer': response.choices[0].message.content,
+                                 'prompt tokens': response.usage.prompt_tokens,
+                                 'completion tokens': response.usage.completion_tokens,
+                                 'total tokens': response.usage.total_tokens,
+                                 'cost': get_cost(response),
+                                 'not_mention': data.get("not_mention"),
+                                 'Correct Answer': data["answer"]})
         return results
 
     # Use ThreadPoolExecutor to handle files concurrently within each folder
@@ -96,4 +116,4 @@ def run(output_folder_path, questions_folder_path):
         print("Please close the file and press Enter to try again.")
         input()
 
-run("output_data", "input_data/questions")
+# run("output_data", "input_data/questions")
