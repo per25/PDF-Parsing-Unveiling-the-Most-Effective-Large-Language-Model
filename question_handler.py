@@ -12,6 +12,9 @@ client = OpenAI(base_url="https://openrouter.ai/api/v1",
 
 client = wrap_openai(client)
 
+timestamp = time.strftime("%Y%m%d-%H%M%S")
+
+
 def get_questions(file_name, folder_path):
     try:
         # remove the extension from the file name
@@ -90,6 +93,7 @@ def run(output_folder_path, questions_folder_path):
                                  'total tokens': response.usage.total_tokens,
                                  'cost': get_cost(response),
                                  'not_mention': data.get("not_mention"),
+                                 'run': timestamp,
                                  'Correct Answer': data["answer"]})
         return results
 
@@ -108,7 +112,6 @@ def run(output_folder_path, questions_folder_path):
     # Saving results
     if not os.path.exists('results'):
         os.makedirs('results')
-    timestamp = time.strftime("%Y%m%d-%H%M%S")
     try:
         df.to_excel(f'results/responses_{timestamp}.xlsx', index=False)
     except Exception as e:
