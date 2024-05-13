@@ -7,8 +7,6 @@ from langchain_community.document_loaders import (
 from io import StringIO
 from pdfminer.high_level import extract_text_to_fp
 from pdfminer.layout import LAParams
-import time
-import psutil
 import os
 import fitz as PyMuPDF
 from tqdm import tqdm
@@ -19,7 +17,7 @@ import shutil
 
 def performance_decorator(func):
     """
-    A decorator that measures the performance metrics of a function.
+    A decorator that measures the performance metrics of a function and saves them to an Excel file.
 
     Args:
         func (function): The function to be decorated.
@@ -28,7 +26,14 @@ def performance_decorator(func):
         function: The decorated function.
 
     """
+    import time
+    import psutil
+    import pandas as pd
+    import numpy as np
+    import os
+
     def wrapper(*args, **kwargs):
+        file_path = 'output_data/performance_metrics.xlsx'
         start_time = time.time()
         start_cpu = psutil.cpu_percent(interval=None)
         start_memory = psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2
@@ -39,17 +44,82 @@ def performance_decorator(func):
         end_cpu = psutil.cpu_percent(interval=None)
         end_memory = psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2
 
-        metrics = f"Execution time: {end_time - start_time} seconds\n"
-        metrics += f"CPU usage: {end_cpu - start_cpu} percent\n"
-        metrics += f"Memory usage: {end_memory - start_memory} MB\n"
+        if result is None: # is from the rest of them 
+            # the additional metrics is a dict that have that can be llm_tokens, embedding_tokens and pages calls or just one of them
+            llm_tokens = np.nan
+            embedding_tokens = np.nan
+            pages_calls = np.nan
 
-        with open('output_data/performance_metrics.txt', 'a') as f:
-            f.write(f"Performance metrics for {func.__name__}:\n")
-            f.write(metrics)
-            f.write("\n")
+            metrics = {
+                'Tool': [func.__name__],
+                'Execution Time (seconds)': [end_time - start_time],
+                'CPU Usage (percent)': [end_cpu - start_cpu],
+                'Memory Usage (MB)': [end_memory - start_memory],
+                'llm_tokens': [llm_tokens],
+                'embedding_tokens': [embedding_tokens],
+                'pages_calls': [pages_calls]
+            }
+            df = pd.DataFrame(metrics)
 
+            # Check if the file already exists
+            if os.path.exists(file_path):
+                with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+                    df.to_excel(writer, index=False, header=False, startrow=writer.sheets['Sheet1'].max_row)
+            else:
+                df.to_excel(file_path, index=False)
+
+        elif isinstance(result, list): # is from llama tesseract
+            for item in result:
+                df = pd.DataFrame(item, index=[0])  # Add index=[0] if item is a dictionary with scalar values
+                df.insert(0, 'Tool', func.__name__)
+
+                # Check if the file already exists
+                if os.path.exists(file_path):
+                    with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+                        df.to_excel(writer, index=False, header=False, startrow=writer.sheets['Sheet1'].max_row)
+                else:
+                    df.to_excel(file_path, index=False)
+    
+
+        else: # is from llama index 
+                        # the additional metrics is a dict that have that can be llm_tokens, embedding_tokens and pages calls or just one of them
+            llm_tokens = result.get('llm_tokens', 'N/A')
+            embedding_tokens = result.get('embedding_tokens', 'N/A')
+            pages_calls = result.get('pages_calls', 'N/A')
+
+            metrics = {
+                'Tool': [func.__name__],
+                'Execution Time (seconds)': [end_time - start_time],
+                'CPU Usage (percent)': [end_cpu - start_cpu],
+                'Memory Usage (MB)': [end_memory - start_memory],
+                'llm_tokens': [llm_tokens],
+                'embedding_tokens': [embedding_tokens],
+                'pages_calls': [pages_calls]
+            }
+            df = pd.DataFrame(metrics)
+
+            # Check if the file already exists
+            if os.path.exists(file_path):
+                with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+                    df.to_excel(writer, index=False, header=False, startrow=writer.sheets['Sheet1'].max_row)
+            else:
+                df.to_excel(file_path, index=False)
+        
         return result
+
     return wrapper
+
+
+import PyPDF2
+
+def get_number_of_pages(file_path):
+    # Open the PDF file
+    with open(file_path, "rb") as file:
+        # Create PDF reader object
+        pdf_reader = PyPDF2.PdfReader(file)
+        # Get the number of pages
+        number_of_pages = len(pdf_reader.pages)
+        return number_of_pages
 
 
 @performance_decorator
@@ -169,6 +239,7 @@ def process_pdf_file_PyMuPDF(file_path, output_file):
     out.close()
 
 
+@performance_decorator
 def process_pdf_file_pdfminerSix(file_path, output_file):
     output_string = StringIO()
     with open(file_path, 'rb') as f:
@@ -179,16 +250,18 @@ def process_pdf_file_pdfminerSix(file_path, output_file):
         f.write(output_string.getvalue().strip())
 
 
+@performance_decorator
 def process_pdf_file_textract_with_correction(file_path, output_file):
     import tesseract_with_llama2_corrections as tesseract_with_llama2
-    raw_ocr, corrected_text, filter_text = tesseract_with_llama2.tesseract_with_llm_correction(file_path)
+    raw_ocr, corrected_text, filter_text, performance_metrics= tesseract_with_llama2.tesseract_with_llm_correction(file_path)
     with open(output_file + "_raw_ocr.md", "w", encoding='utf-8') as f:
         f.write(raw_ocr)
     with open(output_file + "_corrected", "w", encoding='utf-8') as f:
         f.write(corrected_text)
     with open(output_file + "_fileted.md", "w", encoding='utf-8') as f:
         f.write(filter_text)
-    
+
+    return performance_metrics    
 
 @performance_decorator
 def process_pdf_file_llama_index_md(file_path, output_file):
@@ -216,7 +289,7 @@ def process_pdf_file_llama_index_md(file_path, output_file):
 
 
 @performance_decorator
-def process_pdf_file_llama_index_txt(file_path, output_file):
+def process_pdf_file_llama_index_md(file_path, output_file):
     import nest_asyncio 
     from llama_parse import LlamaParse
     from os import getenv
@@ -235,9 +308,38 @@ def process_pdf_file_llama_index_txt(file_path, output_file):
 
     # sync 
     document = parser.load_data(file_path)
+
+    with open(output_file, "w", encoding='utf-8') as f:
+        f.write(document[0].text)
+    
+    return {'pages_calls': get_number_of_pages(file_path)}
+
+
+@performance_decorator
+def process_pdf_file_llama_index_txt(file_path, output_file):
+    import nest_asyncio 
+    from llama_parse import LlamaParse
+    from os import getenv
+
+    nest_asyncio.apply()
+
+    key = getenv("LlamaIndex")
+
+    parser = LlamaParse(
+        api_key=key,
+        result_type="text",
+        num_workers=4,
+        verbose=True,
+        language="en"
+    )
+
+    # sync 
+    document = parser.load_data(file_path)
     
     with open(output_file, "w", encoding='utf-8') as f:
         f.write(document[0].text)
+
+    return {'pages_calls': get_number_of_pages(file_path)}
 
 
 def reset_performance_metrics_file():
@@ -246,6 +348,15 @@ def reset_performance_metrics_file():
     """
     with open('output_data/performance_metrics.txt', 'w') as f:
         f.write("Performance metrics for each function:\n\n")
+
+    # clear the excel file
+    if os.path.exists('output_data/performance_metrics.xlsx'):
+        os.remove('output_data/performance_metrics.xlsx')
+
+    import pandas as pd
+
+    df = pd.DataFrame(columns=['Tool', 'Execution Time (seconds)', 'CPU Usage (percent)', 'Memory Usage (MB)', 'llm_tokens', 'embedding_tokens', 'pages_calls'])
+    df.to_excel('output_data/performance_metrics.xlsx', index=False)
 
 
 def clear_output_files(path):
