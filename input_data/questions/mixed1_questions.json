@@ -14,6 +14,21 @@
       "id": 3,
       "question": "What is the beer brand on the beer from 1989?",
       "answer": "Norrlands Guld"
+    },
+    {
+      "id": 4,
+      "question": "When was Sweden industrialized and urbanized?",
+      "answer": "19th century"
+    },
+    {
+      "id": 5,
+      "question": "What is the main Swedish specialty drink?",
+      "answer": "Brännvin, burn-wine"
+    },
+    {
+      "id": 6,
+      "question": "What is the tax on vodka(40%) in Sweden?",
+      "answer": "200.56 SEK/liter"
     }
   ]
 }
