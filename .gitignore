@@ -5,6 +5,7 @@
 # ignore the output_data folder and its contents
 output_data/
 results/
+*.pdf
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
