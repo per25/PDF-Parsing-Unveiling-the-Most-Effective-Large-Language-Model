@@ -1,41 +1,16 @@
 # PDF-Parsing-Unveiling-the-Most-Effective-Large-Language-Model
 
+## Introduction
 
+text 
 
-pip install
+## Installation
 
-langchain
+## Installation
 
-pdfminer
-
-pdfminer.six
-
-fitz
-
-PyMuPDF
-
-pypdf
-
-unstructured
-
-tqdm
-
-bs4
-
-openai
-
-pandas 
-
-openpyxl
-
-pdf2image
-
-pillow_heif
-
-
-torch 2.2.0
-
-pandas 2.2.2 
+1. Clone the repository
+2. Navigate to the project directory
+3. Run `pip install -r requirements.txt` to install the dependencies
 
 Extern dependencies: 
 
